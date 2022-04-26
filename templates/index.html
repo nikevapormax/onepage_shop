@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+    <title>원페이지쇼핑몰</title>
+    <!--구글 폰트 링크 -->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@700&display=swap" rel="stylesheet">
+    <!--카톡이나 sns로 링크를 보내면 보이는 사진, 제목, 내용 등-->
+    <meta property="og:title" content="아이폰13 사라"/>
+    <meta property="og:description" content="연습입니다."/>
+    <meta property="og:image" content="{{ url_for('static', filename='og_image.jpeg') }}"/>
+
+    <style>
+        * {
+            /*구글폰트 적용시 꼭 쓰기!*/
+            font-family: 'Nanum Gothic', sans-serif;
+        }
+        .location {
+            max-width: 500px;
+            width: 95%;
+            margin: auto;
+        }
+        .item-pic {
+            max-width: 500px;
+            width: 95%;
+            height: 300px;
+
+            /*사진 3총사*/
+            background-image: url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDJ9IcNAjp1CdDaPnNoL7xzzCjHz_uYS6GhA&usqp=CAU");
+            background-position: center;
+            background-size: cover;
+        }
+        .item-des {
+            max-width: 500px;
+            width: 95%;
+            margin: 20px 0px 20px 0px;
+        }
+        .price-tag{
+            font-size: 15px;
+        }
+        .paraColor {
+            color: blue;
+        }
+        .ordering {
+            max-width: 500px;
+            width: 95%;
+        }
+        .btn_loc {
+            margin: auto;
+            display: block;
+        }
+        .table {
+            margin-top: 20px;
+        }
+        .trWidth {
+            margin: auto;
+            max-width: 500px;
+            width: 95%;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            dollar_won();
+            stacker();
+        });
+        function dollar_won() {
+            $.ajax({
+                type:'GET',
+                url: 'http://spartacodingclub.shop/sparta_api/rate',
+                data:{},
+                success: function (response) {
+                    let rate = response['rate']
+                    $('#rating').text(rate)
+                }
+            })
+        }
+        function ordering() {
+            let name = $('#userName').val()
+            let model = $('#modelName').val()
+            let color = $('#colorName').val()
+            let count = $('#counting').val()
+            let addr = $('#address').val()
+            let phone = $('#phoneNum').val()
+
+            $.ajax({
+                type:'POST',
+                url: '/order',
+                data: {name_give: name, model_give: model, color_give: color, count_give: count, addr_give: addr, phone_give: phone},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+        function stacker() {
+            $.ajax({
+                type:'GET',
+                url: '/order',
+                data: {},
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        let orders = response['orders']
+                        for (let i = 0; i < orders.length; i++) {
+                            let name = orders[i]['name'];
+                            let model = orders[i]['model'];
+                            let color = orders[i]['color'];
+                            let count = orders[i]['count'];
+                            let addr = orders[i]['addr'];
+                            let phone = orders[i]['phone'];
+
+                            let temp_html = `<tr>
+                                                <th scope="row">${name}</th>
+                                                <td>${model}</td>
+                                                <td>${color}</td>
+                                                <td>${count}</td>
+                                                <td>${addr}</td>
+                                                <td>${phone}</td>
+                                            </tr>`
+                            $('#order-info').append(temp_html)
+                        }
+                    }
+                }
+            })
+        }
+    </script>
+
+
+</head>
+<body>
+    <div class="location">
+        <div class="item-pic"></div>
+        <div class="item-des">
+            <h1>아이폰 13 시리즈 <span class="price-tag">가격 : 950,000원부터</span></h1>
+            <p>애플의 최신 핸드폰으로 그린 색상이 추가적으로 발매되었다.</p>
+            <p class="paraColor" id="dollar_won">달러-원 환율 : <span id="rating">1200.0</span></p>
+        </div>
+        <div class="ordering">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">주문자 이름</span>
+                </div>
+                <input id="userName" type="text" class="form-control" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="modelName">모델</label>
+                </div>
+                <select class="custom-select" id="modelName">
+                    <option selected>-- 모델을 선택하세요 --</option>
+                    <option value="1.아이폰 13 mini">아이폰 13 mini</option>
+                    <option value="2.아이폰 13">아이폰 13</option>
+                    <option value="3.아이폰 13 pro">아이폰 13 pro</option>
+                    <option value="4.아이폰 13 pro max">아이폰 13 pro max</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="colorName">색상</label>
+                </div>
+                <select class="custom-select" id="colorName">
+                    <option selected>-- 모델을 선택하세요 --</option>
+                    <option value="1.스타라이트">스타라이트</option>
+                    <option value="2.미드나이트">미드나이트</option>
+                    <option value="3.블루">블루</option>
+                    <option value="4.핑크">핑크</option>
+                    <option value="5.그린">그린</option>
+                    <option value="6.레드">레드</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="counting">수량</label>
+                </div>
+                <select class="custom-select" id="counting">
+                    <option selected>-- 수량을 선택하세요 --</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                </select>
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">주소</span>
+                </div>
+                <input type="text" class="form-control" id="address" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">전화번호</span>
+                </div>
+                <input type="text" class="form-control" id="phoneNum" aria-label="Username" aria-describedby="basic-addon1">
+            </div>
+            <input onclick="ordering()" class="btn btn-primary btn_loc" type="button" value="주문하기">
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+        <tr class="trWidth">
+            <th scope="col">이름</th>
+            <th scope="col">모델</th>
+            <th scope="col">색상</th>
+            <th scope="col">수량</th>
+            <th scope="col">주소</th>
+            <th scope="col">전화번호</th>
+        </tr>
+        </thead>
+        <tbody id="order-info"></tbody>
+    </table>
+</body>
+
+</html>
