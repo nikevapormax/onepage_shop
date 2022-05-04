@@ -4,7 +4,6 @@ app = Flask(__name__)
 
 from pymongo import MongoClient
 
-# client = MongoClient('localhost', 27017, username="test", password="test")
 client = MongoClient('mongodb://test:test@localhost', 27017)
 # client = MongoClient('localhost', 27017)
 db = client.dbonepage
